@@ -6,7 +6,6 @@ import simplenlg.features.Tense;
 import simplenlg.framework.*;
 import simplenlg.lexicon.Lexicon;
 import simplenlg.lexicon.XMLLexicon;
-import simplenlg.morphology.english.MorphologyRules;
 import simplenlg.phrasespec.AdjPhraseSpec;
 import simplenlg.phrasespec.NPPhraseSpec;
 import simplenlg.phrasespec.PPPhraseSpec;
@@ -110,21 +109,28 @@ public class nlgtest {
              datetime - time
              datetime/role - opens at
          */
-        Map entities = new HashMap<String, String>();
+        Map<String, Object> entities = new HashMap<String, Object>();
         entities.put("category", "delivery");
         entities.put("cuisine", "Indian");
+        HashMap<String, String> entity_location = new HashMap<String, String>();
+        entity_location.put("value", "Near Sohna Road");
+        entities.put("location", entity_location);
         String category = (String) entities.get("category");
         String verb = (category != null && !"".equals(category)) ? category : "serving";
         String cuisine = (String) entities.get("cuisine");
-        String object = cuisine != null ? cuisine + " food" : "food";
+        String object1 = cuisine != null ? cuisine + " food" : "food";
+        HashMap<String, String> location = (HashMap<String, String>) entities.get("location");
+        String object2 = location.get(location.keySet().toArray()[0]);
+        //todo check
+        CoordinatedPhraseElement object = nlgFactory.createCoordinatedPhrase(object1, object2);
 
         SPhraseSpec inputSentence = nlgFactory.createClause();
         inputSentence.setSubject("Restaurants");
         inputSentence.setVerb(verb);
         inputSentence.setObject(object);
         inputSentence.setPlural(true);
-      //  MorphologyRules.buildRegularPresPartVerb(verb);
-        inputSentence.setFeature(Feature.FORM,Form.PRESENT_PARTICIPLE);
+        //  MorphologyRules.buildRegularPresPartVerb(verb);
+        inputSentence.setFeature(Feature.FORM, Form.PRESENT_PARTICIPLE);
 
         String result = realiser.realiseSentence(inputSentence);
         System.out.print(result);
